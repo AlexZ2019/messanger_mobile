@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import AppStack from './AppStack';
 import AuthStack from '../../auth/stacks/AuthStack';
-import { useAuth } from "@/app/modules/auth/context/UserContext";
+import { useAuth } from "@/app/modules/auth/providers/AuthProvider";
 
 export default function RootNavigator() {
   const { user, isLoading } = useAuth();

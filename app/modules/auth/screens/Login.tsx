@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
-import {useAuth} from "@/app/modules/auth/context/UserContext";
+import {useLogin} from "@/app/modules/auth/api/hooks";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { mutate } = useLogin();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -13,9 +13,9 @@ export default function LoginScreen() {
     setError(null);
     setLoading(true);
     try {
-      await login(String(email), String(password));
+      mutate({ email, password });
     } catch (err) {
-      setError('Невірний email або пароль');
+      setError('Incorrect email or password');
       console.error(err);
     } finally {
       setLoading(false);
@@ -28,12 +28,12 @@ export default function LoginScreen() {
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        autoCapitalize="none" // string — коректно
+        autoCapitalize="none"
         keyboardType="email-address"
         style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
       />
       <TextInput
-        placeholder="Пароль"
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry={true}
