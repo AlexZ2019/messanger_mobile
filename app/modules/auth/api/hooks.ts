@@ -6,14 +6,6 @@ interface LoginParams {
   password: string;
 }
 
-export const useUser = () => {
-  return useQuery({
-    queryKey: ['user'],
-    queryFn: authApi.me,
-    retry: false,
-  });
-};
-
 export const useLogin = () => {
   const queryClient = useQueryClient();
 

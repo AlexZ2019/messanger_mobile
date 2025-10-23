@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import {useUser} from "@/app/modules/auth/api/hooks";
+import {useUser} from "@/app/modules/user/api/hooks";
 
 type User = { id: number; email: string; name?: string } | null;
 
