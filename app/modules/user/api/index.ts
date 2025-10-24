@@ -11,4 +11,7 @@ export const userApi = {
       throw err;
     }
   },
+  syncContacts: async (hashedContacts: any): Promise<any> => {
+    await axiosClient.post('contacts', { contacts: hashedContacts });
+  }
 }
