@@ -1,4 +1,5 @@
 import {axiosClient} from "@/app/modules/common/api";
+import {LocalContact} from "@/app/modules/user/types";
 
 export const userApi = {
   getUser: async (): Promise<{ id: number; email: string; name?: string } | null> => {
@@ -11,7 +12,12 @@ export const userApi = {
       throw err;
     }
   },
-  syncContacts: async (hashedContacts: any): Promise<any> => {
-    await axiosClient.post('contacts', { contacts: hashedContacts });
+  syncContacts: async (hashedContacts: LocalContact[]): Promise<any> => {
+    await axiosClient.post('contacts', hashedContacts, {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        Accept: "application/json",
+      }
+    });
   }
 }
