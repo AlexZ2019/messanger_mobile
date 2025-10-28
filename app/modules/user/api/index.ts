@@ -13,7 +13,7 @@ export const userApi = {
     }
   },
   syncContacts: async (hashedContacts: LocalContact[]): Promise<any> => {
-    await axiosClient.post('contacts', hashedContacts, {
+    return axiosClient.post('contacts', hashedContacts, {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
         Accept: "application/json",

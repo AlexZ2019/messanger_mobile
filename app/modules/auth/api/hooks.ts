@@ -1,7 +1,5 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {authApi} from "@/app/modules/auth/api/index";
-import {userApi} from "@/app/modules/user/api";
-import {LocalContact} from '../../user/types';
 
 interface LoginParams {
   email: string;
@@ -30,9 +28,3 @@ export const useLogout = () => {
     },
   });
 };
-
-export const useSyncContacts = () => {
-  return useMutation({
-    mutationFn: (hashedContacts: LocalContact[]) => userApi.syncContacts(hashedContacts)
-  })
-}

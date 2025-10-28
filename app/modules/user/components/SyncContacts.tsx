@@ -4,7 +4,7 @@ import * as Contacts from 'expo-contacts';
 import useModal from "@/app/modules/common/untils/useModal";
 import * as SecureStore from "expo-secure-store";
 import {getContacts} from "@/app/modules/user/utils/getContacts";
-import {useSyncContacts} from "@/app/modules/auth/api/hooks";
+import {useSyncContacts} from "@/app/modules/user/api/hooks";
 
 const ContactsPermissionPrompt = () => {
   const modal = useModal();
@@ -14,8 +14,9 @@ const ContactsPermissionPrompt = () => {
   useEffect(() => {
     const timer = setTimeout(async () => {
       const isContactsAsked = await SecureStore.getItemAsync('isContactAsked');
-      setAlreadyAsked(isContactsAsked === 'true');
-      if (!alreadyAsked) modal.showModal();
+      const asked = isContactsAsked === 'true'
+      setAlreadyAsked(asked);
+      if (!asked) modal.showModal();
     }, 5000);
 
     return () => clearTimeout(timer);
