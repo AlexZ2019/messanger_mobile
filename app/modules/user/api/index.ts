@@ -11,13 +11,5 @@ export const userApi = {
       if (err.response?.status === 401) return null;
       throw err;
     }
-  },
-  syncContacts: async (hashedContacts: LocalContact[]): Promise<any> => {
-    return axiosClient.post('contacts', hashedContacts, {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        Accept: "application/json",
-      }
-    });
   }
 }

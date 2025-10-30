@@ -10,13 +10,3 @@ export const useUser = () => {
     retry: false,
   });
 };
-
-export const useSyncContacts = () => {
-  return useMutation({
-    mutationFn: (hashedContacts: LocalContact[]) => userApi.syncContacts(hashedContacts),
-    onSuccess: async (res) => {
-      await SecureStore.setItemAsync('isContactAsked', 'true')
-      await SecureStore.setItemAsync('contacts', res.data)
-    }
-  })
-}

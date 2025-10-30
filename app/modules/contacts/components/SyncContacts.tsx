@@ -3,27 +3,23 @@ import {Button, Modal, Text, View, StyleSheet} from 'react-native';
 import * as Contacts from 'expo-contacts';
 import useModal from "@/app/modules/common/untils/useModal";
 import * as SecureStore from "expo-secure-store";
-import {getContacts} from "@/app/modules/user/utils/getContacts";
-import {useSyncContacts} from "@/app/modules/user/api/hooks";
+import {getContacts} from "@/app/modules/contacts/utils/getContacts";
+import {useSyncContacts} from "@/app/modules/contacts/api/hooks";
 
 const ContactsPermissionPrompt = () => {
   const modal = useModal();
-  const [alreadyAsked, setAlreadyAsked] = useState(false);
   const { mutate } = useSyncContacts();
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      const isContactsAsked = await SecureStore.getItemAsync('isContactAsked');
-      const asked = isContactsAsked === 'true'
-      setAlreadyAsked(asked);
-      if (!asked) modal.showModal();
-    }, 5000);
+      const contacts = await SecureStore.getItemAsync('contacts');
+      if (!contacts) modal.showModal();
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
 
   const syncContacts = async () => {
-    setAlreadyAsked(true);
     modal.hideModal();
 
     const { status } = await Contacts.requestPermissionsAsync();

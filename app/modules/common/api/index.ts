@@ -3,7 +3,7 @@ import {getDeviceId} from "@/app/modules/auth/utils/getDiveceId";
 import {getAccessToken, getRefreshToken, saveTokens} from "@/app/modules/auth/utils/tokens";
 
 export const axiosClient = axios.create({
-  baseURL: "http://192.168.123.35:3001/api/", //TODO: move to .env
+  baseURL: "http://192.168.123.34:3001/api/", //TODO: move to .env
   withCredentials: true,
 });
 
