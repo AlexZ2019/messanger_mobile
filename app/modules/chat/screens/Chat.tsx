@@ -5,6 +5,7 @@ import { getSocket } from '@/app/modules/common/api/socket';
 import * as SecureStore from 'expo-secure-store';
 import { useChatMutation } from '@/app/modules/chat/api/hooks';
 import { useUser } from '@/app/modules/user/api/hooks';
+import uuid from "react-native-uuid";
 
 export default function ChatRoomScreen({ route }) {
   const { contactId, contactName } = route.params;
@@ -16,7 +17,7 @@ export default function ChatRoomScreen({ route }) {
   const { mutate } = useChatMutation();
 
   const socket = getSocket(user.data.id);
-
+  console.log('messages', messages)
   useEffect(() => {
     mutate(contactId, {
       onSuccess: (data) => {
@@ -94,7 +95,7 @@ export default function ChatRoomScreen({ route }) {
 
   const send = () => {
     if (!text.trim() || !chatId) return;
-    const msg = { chatId, senderId: user.data.id, text, createdAt: new Date().toISOString() };
+    const msg = { id: uuid.v4(), chatId, senderId: user.data.id, text, createdAt: new Date().toISOString() };
     socket.emit('sendMessage', msg);
 
     setMessages(prev => {
@@ -111,7 +112,7 @@ export default function ChatRoomScreen({ route }) {
     <View style={{ flex: 1, padding: 16 }}>
       <FlatList
         data={messages}
-        keyExtractor={(_, i) => i.toString()}
+        keyExtractor={(item, i) => item?.id}
         renderItem={({ item }) => (
           <Text
             style={{
