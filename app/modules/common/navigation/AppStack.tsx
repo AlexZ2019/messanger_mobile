@@ -34,7 +34,8 @@ const ChatsStack = () => (
       name="Chat"
       component={Chat}
       options={({ route }) => ({
-        title: route.params?.contact?.localName || 'Chat',
+        title: route.params?.contactName || 'Chat',
+        headerBackTitle: 'Back',
       })}
     />
   </Stack.Navigator>

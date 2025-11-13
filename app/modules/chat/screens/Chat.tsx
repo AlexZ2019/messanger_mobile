@@ -113,7 +113,8 @@ export default function ChatRoomScreen({ route }) {
         data={messages}
         keyExtractor={(_, i) => i.toString()}
         renderItem={({ item }) => (
-          <Text style={{
+          <Text
+            style={{
             alignSelf: item.senderId === user.data.id ? 'flex-end' : 'flex-start',
             backgroundColor: item.senderId === user.data.id ? '#DCF8C6' : '#ECECEC',
             marginVertical: 2,
