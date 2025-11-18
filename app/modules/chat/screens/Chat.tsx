@@ -1,22 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, TextInput, Button, Text } from 'react-native';
-import { useQueryClient } from '@tanstack/react-query';
-import { getSocket } from '@/app/modules/common/api/socket';
+import React, {useEffect, useState} from 'react';
+import {Button, FlatList, Text, TextInput, View} from 'react-native';
+import {useQueryClient} from '@tanstack/react-query';
+import {getSocket} from '@/app/modules/common/api/socket';
 import * as SecureStore from 'expo-secure-store';
-import { useChatMutation } from '@/app/modules/chat/api/hooks';
-import { useUser } from '@/app/modules/user/api/hooks';
+import {useChatMutation} from '@/app/modules/chat/api/hooks';
+import {useUser} from '@/app/modules/user/api/hooks';
 import uuid from "react-native-uuid";
+import {Chat, ChatRoomScreenNavigationProp, ChatRoomScreenRouteProp, Message} from "@/app/modules/chat/types";
 
-export default function ChatRoomScreen({ route }) {
+type Props = {
+  route: ChatRoomScreenRouteProp;
+  navigation: ChatRoomScreenNavigationProp;
+};
+
+export default function ChatRoomScreen({ route }: Props) {
   const { contactId, localName } = route.params;
   const user = useUser();
-  const [chatId, setChatId] = useState<number | null>(null);
-  const [messages, setMessages] = useState([]);
+  const userId = user?.data?.id;
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[] | []>([]);
   const [text, setText] = useState('');
 
   const queryClient = useQueryClient();
   const { mutate } = useChatMutation();
-  const socket = getSocket(user.data.id);
+  const socket = getSocket(userId);
 
   useEffect(() => {
     mutate(contactId, {
@@ -61,7 +68,7 @@ export default function ChatRoomScreen({ route }) {
     if (!socket.connected) socket.connect();
     socket.emit('joinChat', { chatId });
 
-    const handleMessage = (msg) => {
+    const handleMessage = (msg: Message) => {
       if (msg.chatId !== chatId) return;
 
       setMessages(prev => {
@@ -74,7 +81,7 @@ export default function ChatRoomScreen({ route }) {
       });
     };
 
-    const handleHistory = ({ chatId: id, messages }) => {
+    const handleHistory = ({ chatId: id, messages }: { chatId: string; messages: Message[] }) => {
       if (id !== chatId) return;
 
       setMessages(prev => {
@@ -100,15 +107,15 @@ export default function ChatRoomScreen({ route }) {
     };
   }, [chatId]);
 
-  const updateChatsList = async (msg) => {
+  const updateChatsList = async (msg: Message) => {
     const raw = await SecureStore.getItemAsync('chatsList');
-    const chats = raw ? JSON.parse(raw) : [];
+    const chats: Chat[] = raw ? JSON.parse(raw) : [];
 
     const index = chats.findIndex(c => c.chatId === chatId);
     const entry = {
-      chatId,
+      chatId: chatId!,
       contactId,
-      contactName: localName,
+      localName,
       lastMessage: msg.text,
       updatedAt: Date.now(),
     };
@@ -126,7 +133,7 @@ export default function ChatRoomScreen({ route }) {
     const msg = {
       id: uuid.v4(),
       chatId,
-      senderId: user.data.id,
+      senderId: userId!,
       receiverId: contactId,
       text,
       createdAt: new Date().toISOString(),
@@ -155,8 +162,8 @@ export default function ChatRoomScreen({ route }) {
         renderItem={({ item }) => (
           <Text
             style={{
-              alignSelf: item.senderId === user.data.id ? 'flex-end' : 'flex-start',
-              backgroundColor: item.senderId === user.data.id ? '#DCF8C6' : '#ECECEC',
+              alignSelf: item.senderId === userId ? 'flex-end' : 'flex-start',
+              backgroundColor: item.senderId === userId ? '#DCF8C6' : '#ECECEC',
               marginVertical: 2,
               padding: 8,
               borderRadius: 8,

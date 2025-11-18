@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 const SOCKET_URL = 'http://192.168.123.33:3001';
 let socket: Socket;
 
-export const getSocket = (userId?: string) => {
+export const getSocket = (userId: string | undefined) => {
   if (!socket) {
     socket = io(SOCKET_URL, {
       path: '/chat',

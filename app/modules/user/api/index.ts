@@ -1,7 +1,8 @@
 import {axiosClient} from "@/app/modules/common/api";
+import {User} from "@/app/modules/user/types";
 
 export const userApi = {
-  getUser: async (): Promise<{ id: number; email: string; name?: string } | null> => {
+  getUser: async (): Promise<User | null> => {
     try {
       const { data } = await axiosClient.get('user');
 

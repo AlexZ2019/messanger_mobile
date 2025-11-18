@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
 import {useUser} from "@/app/modules/user/api/hooks";
-
-type User = { id: number; email: string; name?: string } | null;
+import {BaseProvider} from "@/app/modules/common/types";
+import {User} from "@/app/modules/user/types";
 
 interface AuthContextValue {
   user: User;
@@ -10,7 +10,7 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<BaseProvider> = ({ children }) => {
   const { data, isLoading } = useUser();
 
   return (

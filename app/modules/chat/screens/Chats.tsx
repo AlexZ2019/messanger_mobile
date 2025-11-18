@@ -4,10 +4,19 @@ import ContactsPermissionPrompt from "@/app/modules/contacts/components/SyncCont
 import {useNavigation} from "expo-router";
 import {getLocalChats} from "@/app/modules/chat/utils/storageApI";
 import {List} from "react-native-paper";
+import {Chat} from "@/app/modules/chat/types";
+import { StackNavigationProp } from '@react-navigation/stack';
 
-export default function Chats() {
-  const navigation = useNavigation();
-  const [chats, setChats] = useState<any[]>([]);
+type RootStackParamList = {
+  Chat: { chatId: string; contactId: string; localName: string; lastMessage: string; updatedAt: number };
+  Chats: undefined;
+};
+
+type ChatsNavigationProp = StackNavigationProp<RootStackParamList, 'Chats'>;
+
+const Chats: React.FC = () => {
+  const navigation = useNavigation<ChatsNavigationProp>();
+  const [chats, setChats] = useState<Chat[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -16,22 +25,24 @@ export default function Chats() {
     })();
   }, []);
 
-  const openChat = (chat) => {
-    navigation.navigate('Chat', { ...chat })
+  const openChat = (chat: Chat) => {
+    navigation.navigate("Chat", { ...chat });
   };
 
   return (
     <View>
-      <ContactsPermissionPrompt/>
-      {chats?.map((chat, index) => (
+      <ContactsPermissionPrompt />
+      {chats.map((chat) => (
         <List.Item
           key={chat.chatId}
-          title={chat.contactName}
-          description={chat?.lastMessage || "last Message example"}
-          left={props => <List.Icon {...props} icon={"account"} />}
+          title={chat.localName || "Chat"}
+          description={chat.lastMessage || "last Message example"}
+          left={(props) => <List.Icon {...props} icon="account" />}
           onPress={() => openChat(chat)}
         />
       ))}
     </View>
   );
-}
+};
+
+export default Chats;
