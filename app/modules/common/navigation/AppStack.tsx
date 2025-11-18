@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Chats from '@/app/modules/chat/screens/Chats';
 import Chat from '@/app/modules/chat/screens/Chat';
 import Contacts from '@/app/modules/contacts/screens/Contacts';
+import {useChatListeners} from "@/app/modules/common/untils/useChatListeners";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -34,7 +35,7 @@ const ChatsStack = () => (
       name="Chat"
       component={Chat}
       options={({ route }) => ({
-        title: route.params?.contactName || 'Chat',
+        title: route.params?.localName || 'Chat',
         headerBackTitle: 'Back',
       })}
     />
@@ -51,26 +52,29 @@ const ContactsStack = () => (
   </Stack.Navigator>
 );
 
-const AppStack = () => (
-  <Tab.Navigator screenOptions={{ headerShown: false }}>
-    <Tab.Screen
-      name="ChatsStack"
-      component={ChatsStack}
-      options={{
-        tabBarIcon: ({ color, size }) => <Icon name="chat" color={color} size={size} />,
-        title: 'Chats',
-      }}
-    />
+const AppStack = () => {
+  useChatListeners();
 
-    <Tab.Screen
-      name="ContactsStack"
-      component={ContactsStack}
-      options={{
-        tabBarIcon: ({ color, size }) => <Icon name="account" color={color} size={size} />,
-        title: 'Contacts',
-      }}
-    />
-  </Tab.Navigator>
-);
+  return (
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen
+        name="ChatsStack"
+        component={ChatsStack}
+        options={{
+          tabBarIcon: ({ color, size }) => <Icon name="chat" color={color} size={size} />,
+          title: 'Chats',
+        }}
+      />
+      <Tab.Screen
+        name="ContactsStack"
+        component={ContactsStack}
+        options={{
+          tabBarIcon: ({ color, size }) => <Icon name="account" color={color} size={size} />,
+          title: 'Contacts',
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 export default AppStack;

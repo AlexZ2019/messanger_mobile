@@ -13,6 +13,7 @@ const ContactsPermissionPrompt = () => {
   useEffect(() => {
     const timer = setTimeout(async () => {
       const contacts = await SecureStore.getItemAsync('contacts');
+      // TODO: encapsulate getting contacts fro storage ^^
       if (!contacts) modal.showModal();
     }, 2000);
 

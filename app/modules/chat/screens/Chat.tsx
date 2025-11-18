@@ -8,21 +8,35 @@ import { useUser } from '@/app/modules/user/api/hooks';
 import uuid from "react-native-uuid";
 
 export default function ChatRoomScreen({ route }) {
-  const { contactId, contactName } = route.params;
+  const { contactId, localName } = route.params;
   const user = useUser();
   const [chatId, setChatId] = useState<number | null>(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
+
   const queryClient = useQueryClient();
   const { mutate } = useChatMutation();
-
   const socket = getSocket(user.data.id);
-  console.log('messages', messages)
+
   useEffect(() => {
     mutate(contactId, {
-      onSuccess: (data) => {
-        if (data?.chatId) setChatId(data.chatId);
-        else console.warn('No chatId in response', data);
+      onSuccess: async (data) => {
+        const raw = await SecureStore.getItemAsync('chatsList');
+        const chats = raw ? JSON.parse(raw) : [];
+
+        if (!chats.find((c: any) => c.chatId === data.chatId)) {
+          chats.push({
+            chatId: data.chatId,
+            contactId,
+            contactName: localName,
+            lastMessage: '',
+            updatedAt: Date.now(),
+          });
+          await SecureStore.setItemAsync('chatsList', JSON.stringify(chats));
+        }
+
+        queryClient.setQueryData(['chats'], chats);
+        setChatId(data.chatId);
       },
       onError: (err) => console.error('Chat creation failed', err),
     });
@@ -31,34 +45,49 @@ export default function ChatRoomScreen({ route }) {
   useEffect(() => {
     if (!chatId) return;
 
-    if (!socket.connected) socket.connect();
+    (async () => {
+      const raw = await SecureStore.getItemAsync(`chat_${chatId}`);
+      // await SecureStore.deleteItemAsync(`chat_${chatId}`)
 
+      if (raw) {
+        setMessages(JSON.parse(raw));
+      }
+    })();
+  }, [chatId]);
+
+  useEffect(() => {
+    if (!chatId) return;
+
+    if (!socket.connected) socket.connect();
     socket.emit('joinChat', { chatId });
 
     const handleMessage = (msg) => {
-      if (msg.chatId === chatId) {
-        setMessages(prev => {
-          if (prev.some(m => m.createdAt === msg.createdAt && m.senderId === msg.senderId)) return prev;
-          const updated = [...prev, msg];
-          SecureStore.setItemAsync(`chat_${chatId}`, JSON.stringify(updated));
-          updateChatsList(msg);
-          return updated;
-        });
-      }
+      if (msg.chatId !== chatId) return;
+
+      setMessages(prev => {
+        if (prev.some(m => m.createdAt === msg.createdAt && m.senderId === msg.senderId)) return prev;
+
+        const updated = [...prev, msg];
+        SecureStore.setItemAsync(`chat_${chatId}`, JSON.stringify(updated));
+        updateChatsList(msg);
+        return updated;
+      });
     };
 
     const handleHistory = ({ chatId: id, messages }) => {
-      if (id === chatId) {
-        setMessages(prev => {
-          const merged = [...prev];
-          for (const msg of messages) {
-            if (!merged.some(m => m.createdAt === msg.createdAt && m.senderId === msg.senderId)) {
-              merged.push(msg);
-            }
+      if (id !== chatId) return;
+
+      setMessages(prev => {
+        const merged = [...prev];
+        for (const msg of messages) {
+          if (!merged.some(m => m.createdAt === msg.createdAt && m.senderId === msg.senderId)) {
+            merged.push(msg);
           }
-          return merged;
-        });
-      }
+        }
+
+        SecureStore.setItemAsync(`chat_${chatId}`, JSON.stringify(merged));
+        return merged;
+      });
     };
 
     socket.on('message', handleMessage);
@@ -71,38 +100,48 @@ export default function ChatRoomScreen({ route }) {
     };
   }, [chatId]);
 
-  useEffect(() => {
-    const handleNotification = (msg) => {
-      console.log('Нове повідомлення для користувача', msg);
-    };
-    socket.on('newMessageNotification', handleNotification);
-
-    return () => {
-      socket.off('newMessageNotification', handleNotification);
-    };
-  }, []);
-
   const updateChatsList = async (msg) => {
     const raw = await SecureStore.getItemAsync('chatsList');
     const chats = raw ? JSON.parse(raw) : [];
+
     const index = chats.findIndex(c => c.chatId === chatId);
-    const entry = { chatId, contactId, contactName, lastMessage: msg.text, updatedAt: Date.now() };
+    const entry = {
+      chatId,
+      contactId,
+      contactName: localName,
+      lastMessage: msg.text,
+      updatedAt: Date.now(),
+    };
+
     if (index >= 0) chats[index] = entry;
     else chats.push(entry);
+
     await SecureStore.setItemAsync('chatsList', JSON.stringify(chats));
     queryClient.setQueryData(['chats'], chats);
   };
 
   const send = () => {
     if (!text.trim() || !chatId) return;
-    const msg = { id: uuid.v4(), chatId, senderId: user.data.id, text, createdAt: new Date().toISOString() };
+
+    const msg = {
+      id: uuid.v4(),
+      chatId,
+      senderId: user.data.id,
+      receiverId: contactId,
+      text,
+      createdAt: new Date().toISOString(),
+    };
+
     socket.emit('sendMessage', msg);
 
     setMessages(prev => {
       const exists = prev.find(m => m.createdAt === msg.createdAt && m.senderId === msg.senderId);
       if (exists) return prev;
+
+      const updated = [...prev, msg];
+      SecureStore.setItemAsync(`chat_${chatId}`, JSON.stringify(updated));
       updateChatsList(msg);
-      return [...prev, msg];
+      return updated;
     });
 
     setText('');
@@ -112,20 +151,22 @@ export default function ChatRoomScreen({ route }) {
     <View style={{ flex: 1, padding: 16 }}>
       <FlatList
         data={messages}
-        keyExtractor={(item, i) => item?.id}
+        keyExtractor={(item) => item?.id}
         renderItem={({ item }) => (
           <Text
             style={{
-            alignSelf: item.senderId === user.data.id ? 'flex-end' : 'flex-start',
-            backgroundColor: item.senderId === user.data.id ? '#DCF8C6' : '#ECECEC',
-            marginVertical: 2,
-            padding: 8,
-            borderRadius: 8,
-          }}>
+              alignSelf: item.senderId === user.data.id ? 'flex-end' : 'flex-start',
+              backgroundColor: item.senderId === user.data.id ? '#DCF8C6' : '#ECECEC',
+              marginVertical: 2,
+              padding: 8,
+              borderRadius: 8,
+            }}
+          >
             {item.text}
           </Text>
         )}
       />
+
       <View style={{ flexDirection: 'row', marginTop: 10 }}>
         <TextInput
           style={{ flex: 1, borderWidth: 1, borderRadius: 8, padding: 8 }}

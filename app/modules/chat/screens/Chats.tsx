@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { View, Text } from 'react-native';
+import {View} from 'react-native';
 import ContactsPermissionPrompt from "@/app/modules/contacts/components/SyncContacts";
 import {useNavigation} from "expo-router";
 import {getLocalChats} from "@/app/modules/chat/utils/storageApI";
@@ -17,7 +17,7 @@ export default function Chats() {
   }, []);
 
   const openChat = (chat) => {
-    navigation.navigate('Chat', chat)
+    navigation.navigate('Chat', { ...chat })
   };
 
   return (
