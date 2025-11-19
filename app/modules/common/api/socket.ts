@@ -1,11 +1,11 @@
 import { io, Socket } from 'socket.io-client';
+import {API_URL, API_PORT} from "@env";
 
-const SOCKET_URL = 'http://192.168.123.33:3001';
 let socket: Socket;
 
 export const getSocket = (userId: string | undefined) => {
   if (!socket) {
-    socket = io(SOCKET_URL, {
+    socket = io(`${API_URL}${API_PORT}`, {
       path: '/chat',
       transports: ['websocket'],
       autoConnect: false,

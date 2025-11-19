@@ -1,8 +1,11 @@
 import axios from 'axios';
 import {getAccessToken, getDeviceId, getRefreshToken, saveTokens} from '@/app/modules/auth/utils/storageApI';
+import {API_URL, API_PORT, API_BASE_ENDPOINT} from '@env';
+
+const baseURL = `${API_URL}${API_PORT}${API_BASE_ENDPOINT}`
 
 export const axiosClient = axios.create({
-  baseURL: 'http://192.168.123.33:3001/api/',
+  baseURL,
   withCredentials: true,
 });
 
@@ -22,7 +25,7 @@ axiosClient.interceptors.request.use(
 );
 
 const axiosRefresh = axios.create({
-  baseURL: 'http://192.168.123.33:3001/api/',
+  baseURL,
   withCredentials: true,
 });
 
