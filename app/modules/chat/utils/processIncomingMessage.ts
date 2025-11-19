@@ -1,8 +1,6 @@
-import * as SecureStore from "expo-secure-store";
-import { QueryClient } from "@tanstack/react-query";
-import { getChatsList, saveChatsList, saveMessage } from "@/app/modules/chat/utils/storageApI";
-import { Chat, Message } from "@/app/modules/chat/types";
-import { Contact } from "@/app/modules/contacts/types";
+import {getChatsList, saveChatsList, saveMessage} from "@/app/modules/chat/utils/storageApI";
+import {Chat, Message} from "@/app/modules/chat/types";
+import {getContacts} from "@/app/modules/contacts/utils/storageApI";
 
 export const upsertChatEntry = async (
   chatId: string,
@@ -11,8 +9,7 @@ export const upsertChatEntry = async (
 ) => {
   const chats: Chat[] = await getChatsList();
 
-  const contactsRaw = await SecureStore.getItemAsync("contacts");
-  const contacts: Contact[] = contactsRaw ? JSON.parse(contactsRaw) : [];
+  const contacts = await getContacts();
   const contact = contacts.find(c => c.id === contactId);
   const contactName = contact?.localName || contact?.nickname || contact?.firstname || "Unknown";
 

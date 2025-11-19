@@ -1,6 +1,5 @@
 import {axiosClient} from "@/app/modules/common/api";
-import {getDeviceId} from "@/app/modules/auth/utils/getDiveceId";
-import {clearTokens, saveTokens} from "@/app/modules/auth/utils/tokens";
+import {clearTokens, getDeviceId, saveTokens} from "@/app/modules/auth/utils/storageApI";
 import {LoginParams} from "@/app/modules/auth/types";
 
 export const authApi = {

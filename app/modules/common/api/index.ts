@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { getDeviceId } from '@/app/modules/auth/utils/getDiveceId';
-import { getAccessToken, getRefreshToken, saveTokens } from '@/app/modules/auth/utils/tokens';
+import {getAccessToken, getDeviceId, getRefreshToken, saveTokens} from '@/app/modules/auth/utils/storageApI';
 
 export const axiosClient = axios.create({
   baseURL: 'http://192.168.123.33:3001/api/',

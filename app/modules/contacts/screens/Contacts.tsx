@@ -6,6 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Contact} from '@/app/modules/contacts/types';
 import {useUser} from '@/app/modules/user/api/hooks';
 import {ContactsNavigationProp} from "@/app/modules/common/types";
+import {getContacts} from "@/app/modules/contacts/utils/storageApI";
 
 
 const Contacts = () => {
@@ -15,8 +16,8 @@ const Contacts = () => {
 
   useEffect(() => {
     const loadContacts = async () => {
-      const storedContacts = await SecureStore.getItemAsync('contacts');
-      if (storedContacts) setContacts(JSON.parse(storedContacts));
+      const storedContacts = await getContacts()
+      if (storedContacts) setContacts(storedContacts);
       //TODO: for test VV
       if (user?.data?.email === "ashur@gmail.com") {
         const testContact = {

@@ -3,8 +3,9 @@ import {Button, Modal, Text, View, StyleSheet} from 'react-native';
 import * as Contacts from 'expo-contacts';
 import useModal from "@/app/modules/common/untils/useModal";
 import * as SecureStore from "expo-secure-store";
-import {getContacts} from "@/app/modules/contacts/utils/getContacts";
+import {getPhoneContacts} from "@/app/modules/contacts/utils/getPhoneContacts";
 import {useSyncContacts} from "@/app/modules/contacts/api/hooks";
+import {getContacts} from "@/app/modules/contacts/utils/storageApI";
 
 const ContactsPermissionPrompt = () => {
   const modal = useModal();
@@ -12,8 +13,7 @@ const ContactsPermissionPrompt = () => {
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      const contacts = await SecureStore.getItemAsync('contacts');
-      // TODO: encapsulate getting contacts fro storage ^^
+      const contacts = await getContacts();
       if (!contacts) modal.showModal();
     }, 2000);
 
@@ -25,7 +25,7 @@ const ContactsPermissionPrompt = () => {
 
     const { status } = await Contacts.requestPermissionsAsync();
     if (status === 'granted') {
-      const contacts = await getContacts();
+      const contacts = await getPhoneContacts();
       if (contacts) {
         mutate(contacts);
       }
