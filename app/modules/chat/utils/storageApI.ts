@@ -1,9 +1,13 @@
 import * as SecureStore from "expo-secure-store";
 import {Chat, Message} from "../types";
 
-export const getLocalChats = async () => {
-  const localChats = await SecureStore.getItemAsync('chatsList')
-  return localChats ? JSON.parse(localChats) : []
+export const loadMessages = async (chatId: string): Promise<Message[]> => {
+  const raw = await SecureStore.getItemAsync(`chat_${chatId}`);
+  return raw ? JSON.parse(raw) : [];
+};
+
+export const saveMessages = async (chatId: string, msgs: Message[]) => {
+  await SecureStore.setItemAsync(`chat_${chatId}`, JSON.stringify(msgs));
 };
 
 export async function saveMessage(chatId: string, msg: Message) {
