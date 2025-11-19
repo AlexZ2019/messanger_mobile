@@ -1,34 +1,20 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
-import { Button } from 'react-native-paper';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
+import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Chats from '@/app/modules/chat/screens/Chats';
 import Chat from '@/app/modules/chat/screens/Chat';
 import Contacts from '@/app/modules/contacts/screens/Contacts';
-import { useChatListeners } from '@/app/modules/common/untils/useChatListeners';
-
-type ChatsStackParamList = {
-  Chats: undefined;
-  Chat: { contactId: string; localName: string };
-};
-
-type ContactsStackParamList = {
-  Contacts: undefined;
-};
-
-type TabParamList = {
-  ChatsStack: undefined;
-  ContactsStack: undefined;
-};
-
-type ChatsScreenNavigationProp = CompositeNavigationProp<
-  NativeStackNavigationProp<ChatsStackParamList, 'Chats'>,
-  BottomTabNavigationProp<TabParamList>
->;
+import {useChatListeners} from '@/app/modules/common/untils/useChatListeners';
+import {
+  ChatsScreenNavigationProp,
+  ChatsStackParamList,
+  ContactsStackParamList,
+  TabParamList
+} from "@/app/modules/common/types";
 
 const ChatsStackNavigator = () => {
   const Stack = createNativeStackNavigator<ChatsStackParamList>();
