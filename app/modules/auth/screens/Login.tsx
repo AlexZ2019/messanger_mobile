@@ -1,5 +1,5 @@
-import React from 'react';
-import { View } from 'react-native'
+import React, { FC } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,13 +19,24 @@ const schema = yup.object({
 
 type LoginFormData = yup.InferType<typeof schema>;
 
-const styles = {
-  container: { flex: 1, padding: 20, justifyContent: 'center' },
-  error: { color: 'red', marginBottom: 10 },
-  input: { borderWidth: 1, padding: 8, marginBottom: 10 }
-} as any //TODO: remove any
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center'
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10
+  },
+  input: {
+    borderWidth: 1,
+    padding: 8,
+    marginBottom: 10
+  }
+});
 
-export default function LoginScreen() {
+const LoginScreen: FC = () => {
   const { mutate } = useLogin();
 
   const {
@@ -95,4 +106,6 @@ export default function LoginScreen() {
       </Button>
     </View>
   );
-}
+};
+
+export default LoginScreen;

@@ -1,12 +1,7 @@
-import React, { createContext, useContext } from 'react';
+import React, {createContext, useContext} from 'react';
 import {useUser} from "@/app/modules/user/api/hooks";
 import {BaseProvider} from "@/app/modules/common/types";
-import {User} from "@/app/modules/user/types";
-
-interface AuthContextValue {
-  user: User;
-  isLoading: boolean;
-}
+import {AuthContextValue} from "@/app/modules/auth/types";
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
