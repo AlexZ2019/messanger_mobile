@@ -8,13 +8,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Chats from '@/app/modules/chat/screens/Chats';
 import Chat from '@/app/modules/chat/screens/Chat';
 import Contacts from '@/app/modules/contacts/screens/Contacts';
-import {useChatListeners} from '@/app/modules/common/untils/useChatListeners';
+
 import {
   ChatsScreenNavigationProp,
   ChatsStackParamList,
   ContactsStackParamList,
   TabParamList
 } from "@/app/modules/common/types";
+import {useSocketListeners} from "@/app/modules/chat/utils/useSocketListeners";
 
 const ChatsStackNavigator = () => {
   const Stack = createNativeStackNavigator<ChatsStackParamList>();
@@ -64,7 +65,7 @@ const ContactsStackNavigator = () => {
 const Tab = createBottomTabNavigator<TabParamList>();
 
 const AppStack = () => {
-  useChatListeners();
+  useSocketListeners();
 
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>

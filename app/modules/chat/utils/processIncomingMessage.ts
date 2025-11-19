@@ -8,7 +8,6 @@ export const upsertChatEntry = async (
   chatId: string,
   contactId: string,
   lastMessage: string,
-  queryClient: QueryClient
 ) => {
   const chats: Chat[] = await getChatsList();
 
@@ -30,11 +29,10 @@ export const upsertChatEntry = async (
   else chats.push(entry);
 
   await saveChatsList(chats);
-  queryClient.setQueryData(["chats"], chats);
 };
 
-export const processIncomingMessage = async (msg: Message, userId: string, queryClient: QueryClient) => {
+export const processIncomingMessage = async (msg: Message, userId: string) => {
   await saveMessage(msg.chatId, msg);
   const otherId = msg.senderId === userId ? msg.receiverId : msg.senderId;
-  await upsertChatEntry(msg.chatId, otherId, msg.text, queryClient);
+  await upsertChatEntry(msg.chatId, otherId, msg.text);
 };

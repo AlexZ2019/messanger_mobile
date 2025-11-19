@@ -17,6 +17,17 @@ const Contacts = () => {
     const loadContacts = async () => {
       const storedContacts = await SecureStore.getItemAsync('contacts');
       if (storedContacts) setContacts(JSON.parse(storedContacts));
+      //TODO: for test VV
+      if (user?.data?.email === "ashur@gmail.com") {
+        const testContact = {
+          firstname: "Test",
+          id: "bbfd2cc7-9a94-4102-83a7-e2d6aaebeae1",
+          lastname: "User",
+          localName: "Oleksandr",
+          nickname: "",
+          phoneHash: "75945bcadab94d1eacbdfee580bdde82206912b5217dbb05d8abf43b01971f71"}
+        setContacts([testContact]);
+      }
     };
 
     if (user?.data?.email === 'ashur@gmail.com') {
