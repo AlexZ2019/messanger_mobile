@@ -1,66 +1,11 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/native';
-import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Chats from '@/app/modules/chat/screens/Chats';
-import Chat from '@/app/modules/chat/screens/Chat';
-import Contacts from '@/app/modules/contacts/screens/Contacts';
-
-import {
-  ChatsScreenNavigationProp,
-  ChatsStackParamList,
-  ContactsStackParamList,
-  TabParamList
-} from "@/app/modules/common/types";
+import {TabParamList} from "@/app/modules/common/types";
 import {useSocketListeners} from "@/app/modules/chat/utils/useSocketListeners";
-
-const ChatsStackNavigator = () => {
-  const Stack = createNativeStackNavigator<ChatsStackParamList>();
-  const navigation = useNavigation<ChatsScreenNavigationProp>();
-
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Chats"
-        component={Chats}
-        options={{
-          title: 'Chats',
-          headerRight: () => (
-            <Button
-              mode="text"
-              onPress={() => navigation.navigate('ContactsStack')}
-              style={{ marginRight: 10 }}
-              compact
-            >
-              <Icon name="plus" size={24} />
-            </Button>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="Chat"
-        component={Chat}
-        options={({ route }) => ({
-          title: route.params.localName,
-          headerBackTitle: 'Back',
-        })}
-      />
-    </Stack.Navigator>
-  );
-};
-
-const ContactsStackNavigator = () => {
-  const Stack = createNativeStackNavigator<ContactsStackParamList>();
-
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Contacts" component={Contacts} options={{ title: 'Contacts' }} />
-    </Stack.Navigator>
-  );
-};
+import ChatsStackNavigator from "@/app/modules/chat/stacks/ChatsStackNavigator";
+import ContactsStackNavigator from "@/app/modules/contacts/stacks/stacks";
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
